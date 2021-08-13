@@ -26,18 +26,17 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email 8635138+rsenden@users.noreply.github.com
           git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/fortify/FortifyToolsInstaller.git"
-          git tag -d v${{ steps.create_prod_release.outputs.major }} || true
-          git tag -d v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
-          git tag -d latest || true
-          git push origin :v${{ steps.create_prod_release.outputs.major }} || true
-          git push origin :v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
-          git push origin :latest || true
-          git tag -a v${{ steps.create_prod_release.outputs.major }} -m "Release v${{ steps.create_prod_release.outputs.major }}"
-          git tag -a v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} -m "Release v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}"
-          git tag -a latest -m "Latest"
-          git push origin v${{ steps.create_prod_release.outputs.major }}
-          git push origin v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}
-          git push origin latest
+          major=${{ steps.create_prod_release.outputs.major }}
+          minor=${{ steps.create_prod_release.outputs.minor }}
+          patch=${{ steps.create_prod_release.outputs.patch }}
+          fullVersion="v${major}.${minor}.${patch}"
+          
+          for tag in "v${major}.${minor}" "v${major}" "latest"; do
+            git tag -d "$tag" || true 2>/dev/null
+            git push origin :${tag} || true 2>/dev/null
+            git tag -a "${tag}" -m "Release ${fullVersion}"
+            git push origin "${tag}"
+          done
           
       - name: Define build properties
         run: |
@@ -57,4 +56,3 @@ jobs:
           command: release-pr
           release-type: simple
           package-name: ${{ github.event.repository.name }}
-          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"api","section":"API changes","hidden":false}]'
