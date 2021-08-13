@@ -31,11 +31,13 @@ jobs:
           git tag -d latest || true
           git push origin :v${{ steps.create_prod_release.outputs.major }} || true
           git push origin :v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
+          git push origin :latest || true
           git tag -a v${{ steps.create_prod_release.outputs.major }} -m "Release v${{ steps.create_prod_release.outputs.major }}"
           git tag -a v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} -m "Release v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}"
           git tag -a latest -m "Latest"
           git push origin v${{ steps.create_prod_release.outputs.major }}
           git push origin v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}
+          git push origin latest
           
       - name: Define build properties
         run: |
