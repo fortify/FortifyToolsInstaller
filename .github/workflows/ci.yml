@@ -1,0 +1,58 @@
+on: 
+  push: 
+    branches:
+      - '**'
+
+name: CI
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Check-out source code
+        uses: actions/checkout@v2
+    
+      - name: Prepare GitHub release
+        id: create_prod_release
+        uses: GoogleCloudPlatform/release-please-action@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          command: github-release
+          release-type: simple
+          package-name: ${{ github.event.repository.name }}
+          
+      - name: tag major and minor versions
+        if: ${{ steps.create_prod_release.outputs.release_created }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 8635138+rsenden@users.noreply.github.com
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/fortify/FortifyToolsInstaller.git"
+          git tag -d v${{ steps.create_prod_release.outputs.major }} || true
+          git tag -d v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
+          git tag -d latest
+          git push origin :v${{ steps.create_prod_release.outputs.major }} || true
+          git push origin :v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
+          git tag -a v${{ steps.create_prod_release.outputs.major }} -m "Release v${{ steps.create_prod_release.outputs.major }}"
+          git tag -a v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} -m "Release v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}"
+          hit tag -a latest -m "Release v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}.${{ steps.create_prod_release.outputs.patch }}"
+          git push origin v${{ steps.create_prod_release.outputs.major }}
+          git push origin v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }}
+          
+      - name: Define build properties
+        run: |
+          echo DO_RELEASE=${{ steps.create_prod_release.outputs.release_created || false }} >> $GITHUB_ENV
+          
+      - name: Test help
+        run: ./FortifyToolsInstaller.sh --help
+        
+      - name: Test tool installation
+        run: |
+            FTI_TOOLS=FU:v5.2.1 source ./FortifyToolsInstaller.sh && [ -r "${FOD_UPLOAD_JAR}" ]
+          
+      - name: Prepare release PR
+        uses: GoogleCloudPlatform/release-please-action@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          command: release-pr
+          release-type: simple
+          package-name: ${{ github.event.repository.name }}
+          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"api","section":"API changes","hidden":false}]'
