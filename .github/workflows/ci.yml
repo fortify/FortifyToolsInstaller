@@ -28,7 +28,7 @@ jobs:
           git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/fortify/FortifyToolsInstaller.git"
           git tag -d v${{ steps.create_prod_release.outputs.major }} || true
           git tag -d v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
-          git tag -d latest
+          git tag -d latest || true
           git push origin :v${{ steps.create_prod_release.outputs.major }} || true
           git push origin :v${{ steps.create_prod_release.outputs.major }}.${{ steps.create_prod_release.outputs.minor }} || true
           git tag -a v${{ steps.create_prod_release.outputs.major }} -m "Release v${{ steps.create_prod_release.outputs.major }}"
