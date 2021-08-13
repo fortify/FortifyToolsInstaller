@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.0.2](https://www.github.com/fortify/FortifyToolsInstaller/compare/v0.0.2...v0.0.2) (2021-08-13)
+
+
+### chore
+
+* release 0.0.2 ([cd5f9bf](https://www.github.com/fortify/FortifyToolsInstaller/commit/cd5f9bf627a8759a0b3ea3f4df373a734c15f8ca))
+
 ### [0.0.2](https://www.github.com/fortify/FortifyToolsInstaller/compare/v0.0.1...v0.0.2) (2021-08-13)
 
 
