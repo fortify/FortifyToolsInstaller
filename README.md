@@ -19,11 +19,25 @@ The `FortifyToolsInstaller.sh` script is designed to use as little external tool
 
 ## Developers
 
-After making any user-facing changes, make sure to run the following command to update usage documentation:
+### Update USAGE.txt
+After making any user-facing changes to the script, make sure to run the following command to update usage documentation:
 
 ```
 ./FortifyToolsInstaller.sh -h 2> USAGE.txt
 ```
+
+### Conventional commits & versioning
+
+Versioning is handled automatically by [`release-please-action`](https://github.com/google-github-actions/release-please-action) based on [Conventional Commits](https://www.conventionalcommits.org/). Every commit to the `main`
+branch should follow the Conventional Commits convention, for example:
+
+* `fix: Some fix (#2)`
+* `feat: New feature (#3)`
+* `feat!: Some breaking new feature`
+* `docs: Some documentation change`
+
+`release-please-action` invoked from the GitHub CI workflow generates pull requests containing updated `CHANGELOG.md` and `version.txt` files based on these commit messages. Merging the pull request will
+result in a new release version being published. Make sure to do a `git pull` after a release has been published to have your local and remote repositories in sync.
 
 ## License
 
