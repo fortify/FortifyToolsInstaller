@@ -2,37 +2,51 @@
 
 ######################################################################################################
 ###
-### Defining available tool aliases, default versions, download URL's, and output variables
+### Define the tools that can be installed using this script
 ###
 ######################################################################################################
 
 defineTools() {
-	# Define available tool names and their aliases; aliases allow users to either use a short name for brevity 
-	# or long name for clarity. For each tool name, the following functions must exist:
-	#   - install_<toolName>
-	#   - updateVars_<toolName>
-	#   - run_<toolName>
-	# Syntax for adding a tool with aliases:
-	#   addToolAliases <toolName> [toolAlias1] [toolAlias2] [...]
-	addToolAliases FoDUploader FoDUpload fu
-	addToolAliases ScanCentralClient ScanCentral sc
-	addToolAliases FortifyVulnerabilityExporter fve
-
-	# Map tool names (matching toolNamesByAlias array values) to default version for that particular tool.
-	toolDefaultVersionsByName[FoDUploader]=latest
-	toolDefaultVersionsByName[ScanCentralClient]=latest
-	toolDefaultVersionsByName[FortifyVulnerabilityExporter]=latest
-
-	# Map tool names and optional version to download URL's.
-	# Array keys are in the format <toolName>[_<toolVersion>]; the optional version allows for specifying
-	# different download URL's for specific versions.
-	# Array values contain the actual download URL's, and may contain escaped/quoted ${toolVersion} variable.
-	toolDownloadUrlsByNameAndVersion[FoDUploader]='https://github.com/fod-dev/fod-uploader-java/releases/download/${toolVersion}/FodUpload.jar'
-	toolDownloadUrlsByNameAndVersion[FoDUploader_latest]='https://github.com/fod-dev/fod-uploader-java/releases/latest/download/FodUpload.jar'
-	toolDownloadUrlsByNameAndVersion[ScanCentralClient]='https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_${toolVersion}_x64.zip'
-	toolDownloadUrlsByNameAndVersion[ScanCentralClient_latest]='https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_Latest_x64.zip'
-	toolDownloadUrlsByNameAndVersion[FortifyVulnerabilityExporter]='https://github.com/fortify/FortifyVulnerabilityExporter/releases/download/${toolVersion}/FortifyVulnerabilityExporter.zip'
-	toolDownloadUrlsByNameAndVersion[FortifyVulnerabilityExporter_latest]='https://github.com/fortify/FortifyVulnerabilityExporter/releases/latest/download/FortifyVulnerabilityExporter.zip'
+	# Tool names and their properties can be defines using the following functions:
+	#
+	# - addToolAliases <toolName> [toolAlias1] [toolAlias2] [...]
+	#   Define zero or more aliases for the given <toolName>, allowing users to either 
+	#   use a short name for brevity or long name for clarity
+	#
+	# - setToolDefaultVersion <toolName> <defaultVersion>
+	#   Define default version to be used for <toolName> if no version specified
+	#
+	# - addToolDownloadUrl <toolName> <toolVersion|'default'> <downloadUrl>
+	#   Define download URL's for given <toolName>. Different URL's can be specified 
+	#   for different tool versions, for example if the download URL for the 'latest'
+	#   version is different from download URL's for specific versions. One 'default'
+	#   URL can be specified for each tool, which will be used if no version-specific
+	#   URL has been configured. The <downloadUrl> may contain properly escaped/quoted
+	#   ${toolVersion) variable.
+	#
+	# For each tool name, the following functions must exist elsewhere in this script:
+	#   - installTool_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
+	#     Download and install the tool to <toolInstallDir> if it hasn't been
+	#     installed yet or if it is being force-installed.
+	#   - configureTool_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
+	#     Perform any tool configuration tasks like adding environment variables
+	#     to VARS_OUT, generating bin-scripts, updating configuration files, ...
+	#     This function will also run if an existing installation was found.
+	
+	addToolAliases        FoDUploader FoDUpload fu
+	setToolDefaultVersion FoDUploader latest
+	addToolDownloadUrl    FoDUploader default 'https://github.com/fod-dev/fod-uploader-java/releases/download/${toolVersion}/FodUpload.jar'
+	addToolDownloadUrl    FoDUploader latest  'https://github.com/fod-dev/fod-uploader-java/releases/latest/download/FodUpload.jar'
+	
+	addToolAliases        ScanCentralClient ScanCentral sc
+	setToolDefaultVersion ScanCentralClient latest
+	addToolDownloadUrl    ScanCentralClient default 'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_${toolVersion}_x64.zip'
+	addToolDownloadUrl    ScanCentralClient latest  'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_Latest_x64.zip'
+	
+	addToolAliases        FortifyVulnerabilityExporter fve
+	setToolDefaultVersion FortifyVulnerabilityExporter latest
+	addToolDownloadUrl    FortifyVulnerabilityExporter default 'https://github.com/fortify/FortifyVulnerabilityExporter/releases/download/${toolVersion}/FortifyVulnerabilityExporter.zip'
+	addToolDownloadUrl    FortifyVulnerabilityExporter latest  'https://github.com/fortify/FortifyVulnerabilityExporter/releases/latest/download/FortifyVulnerabilityExporter.zip'
 }
 
 ######################################################################################################
@@ -66,6 +80,12 @@ exitWithError() {
 # Usage: logInfo <msg>
 logInfo() {
 	msg "INFO: $@"
+}
+
+# Log warn message
+# Usage: logWarn <msg>
+logWarn() {
+	msg "WARN: $@"
 }
 
 # Check if single argument is an existing command
@@ -113,6 +133,19 @@ _mktemp() {
 	fi
 }
 
+# Execute chmod with the given arguments if installed,
+# otherwise log a warning message.
+# Usage: _chmod <chmod-args>
+_chmod() {
+	if isCommand chmod; then
+		chmod "$@"
+	else 
+		logWarn "Command chmod not found, not executing 'chmod $@'"
+	fi
+}
+
+# Evaluate the given string, expanding any variables contained in the string
+# Usage: expandedString=$(evalStringWithVars ${stringWithVars})
 evalStringWithVars() {
 	stringWithVars=$1
 	echo $(source <(echo "echo \"${stringWithVars}\""))
@@ -160,6 +193,15 @@ isVarTrue() {
 	isTrue $(getVar $var)
 }
 
+# Check whether the given function exists
+# Usage: checkFunctionExists <functionName>
+checkFunctionExists() {
+	local fn=$1
+	if ! [[ $(type -t ${fn}) == function ]]; then
+		exitWithError "Unknown function: $1"
+	fi
+}
+
 
 ######################################################################################################
 ###
@@ -167,6 +209,8 @@ isVarTrue() {
 ###
 ######################################################################################################
 
+# Print an error message followed by usage instructions, then exit the script
+# Usage: exitWithUsage "<error message>"
 exitWithUsage() {
 	msg "ERROR: $@"
 	msg ""
@@ -174,11 +218,13 @@ exitWithUsage() {
 	_exit 1
 }
 
+# Print usage instructions
 usage() {
 	msg "This utility will install and optionally run various Fortify tools that are commonly used in CI/CD pipelines"
 	msg ""
 	msg "Usage:"
-	msg "  [options] ./FortifyToolsInstaller.sh [-h|--help]"
+	msg "  ./FortifyToolsInstaller.sh <-h|--help>"
+	msg "  [options] source ./FortifyToolsInstaller.sh"
 	msg "  [options] source <(curl -sL https://raw.githubusercontent.com/fortify/FortifyToolsInstaller/main/FortifyToolsInstaller.sh)"
 	msg ""
 	msg "[options] is a set of variable definitions. Variables must be specified in either lower case or uppercase"
@@ -194,13 +240,6 @@ usage() {
 	msg "    Supported tools, their aliases and default versions:"
 	printSupportedTools
 	msg ""
-	msg "  FTI_RUN_<toolAlias>=true|1"
-	msg "    Run the tool identified by <toolAlias> without any arguments. <toolAlias> must matching with one of"
-	msg "    the tool aliases listed in FTI_TOOLS."
-	msg ""
-	msg "  FTI_<toolAlias>_ARGS=\"<toolArg1> [toolArg2] [...]\""
-	msg "    Run the tool identified by <toolAlias> with the specified command line arguments"
-	msg ""
 	msg "  FTI_FORCE_INSTALL=true|1"
 	msg "    Force tools to be re-downloaded and installed even if they are already installed"
 	msg ""
@@ -214,8 +253,16 @@ usage() {
 	msg "  FORTIFY_TOOLS_BIN_DIR=</path/to/fortify/tools/bin/dir>"
 	msg "    Override Fortify tools bin directory, defaults to <FORTIFY_TOOLS_DIR>/bin"
 	msg "    Path where scripts and symbolic links to various Fortify tools will be installed"
+	msg ""
+	msg "  SCANCENTRAL_CLIENT_AUTH_TOKEN=<token>"
+	msg "  SC_CLIENT_AUTH_TOKEN=<token>"
+	msg "    Optional ScanCentral client authentication token to be stored in client.properties"
+	msg ""
 }
 
+# Print list of tools that can be installed using this script, together with tool properties
+# like default version and aliases.
+# Usage: printSupportedTools
 printSupportedTools() {
 	for toolName in "${!toolFriendlyAliasesByName[@]}"
 	do
@@ -227,6 +274,39 @@ printSupportedTools() {
 	done
 }
 
+# Main function for running this script
+# Usage: run
+run() {
+	local args="$@"
+	
+	declare -A toolNamesByAlias toolFriendlyAliasesByName toolDefaultVersionsByName toolDownloadUrlsByNameAndVersion
+	declare -a toolFriendlyAliases; 
+	defineTools
+	
+	if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+		usage
+	else 
+		# This associative array is used to store environment variables related to the various tools being installed
+		declare -A VARS_OUT
+		defineGenericOutputVars
+		installTools
+		processVarsOut
+	fi
+}
+
+# Add tool aliases
+# Usage: addToolAliases <toolName> [alias1] [alias2] [...]
+addToolAliases() { 
+	local toolName=$1; shift;
+	addToolAlias ${toolName} ${toolName} # Add toolName as alias for itself
+	for toolAlias in "$@"
+	do
+		addToolAlias ${toolName} ${toolAlias}
+	done
+}
+
+# Add tool alias
+# Usage: addToolAlias <toolName> <toolAlias>
 addToolAlias() {
 	local toolName=$1; local toolFriendlyAlias=$2
 	toolNamesByAlias[${toolFriendlyAlias,,}]=${toolName}
@@ -238,98 +318,90 @@ addToolAlias() {
 	fi
 }
 
-addToolAliases() { 
-	local toolName=$1; shift;
-	addToolAlias ${toolName} ${toolName}
-	for toolAlias in "$@"
-	do
-		addToolAlias ${toolName} ${toolAlias}
-	done
+# Set tool default version
+# Usage: setToolDefaultVersion <toolName> <toolDefaultVersion>
+setToolDefaultVersion() {
+	local toolName=$1;
+	local toolDefaultVersion=$2;
+	toolDefaultVersionsByName[${toolName}]=${toolDefaultVersion}
 }
 
-run() {
-	# This associative array is used to store environment variables related to the various tools being installed
-	declare -A toolNamesByAlias toolFriendlyAliasesByName toolDefaultVersionsByName toolDownloadUrlsByNameAndVersion
-	declare -a toolFriendlyAliases; 
-	declare -A VARS_OUT
-	defineTools
-	defineGlobalVars
-	installAndRunTools
-	processVarsOut
+# Add tool download URL
+# Usage: addToolDownloadUrl <toolName> <toolVersion|'default'> <downloadURL>
+addToolDownloadUrl() {
+	local toolName=$1;
+	local toolVersion=$2;
+	local toolDownloadUrl=$3;
+	toolDownloadUrlsByNameAndVersion[${toolName}_${toolVersion}]="${toolDownloadUrl}"
 }
 
-defineGlobalVars() {
+# Define generic output variables
+# Usage: defineGenericOutputVars
+defineGenericOutputVars() {
 	VARS_OUT[FORTIFY_HOME]=$(getVar FORTIFY_HOME "${HOME}/.fortify")
 	VARS_OUT[FORTIFY_TOOLS_DIR]=$(getVar FORTIFY_TOOLS_DIR "$(getVar FORTIFY_HOME)/tools")
 	VARS_OUT[FORTIFY_TOOLS_BIN_DIR]=$(getVar FORTIFY_TOOLS_BIN_DIR "$(getVar FORTIFY_TOOLS_DIR)/bin")
 	VARS_OUT[PATH]="${PATH}:${VARS_OUT[FORTIFY_TOOLS_BIN_DIR]}"
 }
 
-installAndRunTools() {
-	local fciTools; fciTools=$(getVar FTI_TOOLS)
-	if [ -z "$fciTools" ]; then
-		exitWithUsage "FTI_TOOLS option must be defined"
-	fi
+# Install the tools as configured in the FTI_TOOLS variable
+# Usage: installTools
+installTools() {
+	local fciTools=$(getVar FTI_TOOLS)
+	[ -z "$fciTools" ] && exitWithUsage "FTI_TOOLS option must be defined"
+	mkdir -p $(getVar FORTIFY_TOOLS_BIN_DIR)
 	for toolAndVersion in ${fciTools//,/ }; do
-		installAndRunTool "${toolAndVersion}"
+		IFS=':' read -r toolAlias toolVersion <<< "$toolAndVersion"
+		toolVersion=${toolVersion:-$(getToolDefaultVersion ${toolAlias})}
+		installTool "${toolAlias}" "${toolVersion}"
 	done
 }
 
-processVarsOut() {
-	for key in "${!VARS_OUT[@]}"
-	do
-		export $key="${VARS_OUT[$key]}"
-	done
-}
-
-installAndRunTool() {
-	local toolAndVersion=$1
-	IFS=':' read -r toolAlias toolVersion <<< "$toolAndVersion"
-	toolVersion=${toolVersion:-$(getToolDefaultVersion ${toolAlias})}
-	installTool "${toolAlias}" "${toolVersion}"
-	runTool "${toolAlias}" "${toolVersion}"
-}
-
+# Install the given tool
+# Usage: installTool <toolAlias> <toolVersion>
 installTool() {
 	local toolAlias=$1
 	local toolVersion=$2
-	local toolName; toolName=$(getToolName ${toolAlias})
-	local toolInstallDir; toolInstallDir=$(getToolInstallDir ${toolAlias} ${toolVersion})
+	local toolName=$(getToolName ${toolAlias})
+	local toolInstallDir=$(getToolInstallDir ${toolAlias} ${toolVersion})
 	
-	if isVarTrue FTI_FORCE_INSTALL || [[ ! -d "$toolInstallDir" ]] || [[ -z `ls -A "$toolInstallDir"` ]]; then
+	local fnInstallTool=$(getToolFunction "installTool" $toolAlias)
+	local fnConfigureTool=$(getToolFunction "configureTool" $toolAlias)
+	
+	if doToolInstall ${toolAlias} ${toolVersion} ${toolInstallDir}; then
 		rm -rf "$toolInstallDir" 2> /dev/null
 		mkdir -p "$toolInstallDir"
 		logInfo "Installing ${toolName}:${toolVersion} to ${toolInstallDir}"
-		local fnInstall; fnInstall=$(getToolFunction "install" $toolAlias)
-		$fnInstall ${toolAlias} ${toolVersion} ${toolInstallDir}
+		$fnInstallTool ${toolAlias} ${toolVersion} ${toolInstallDir}
 	else
 		logInfo "Found existing ${toolName}:${toolVersion} in ${toolInstallDir}"
 	fi
-	local fnUpdateVars; fnUpdateVars=$(getToolFunction "updateVars" $toolAlias)
-	$fnUpdateVars ${toolAlias} ${toolVersion} ${toolInstallDir}
+	# We always want to run post-install, independent od whether the tools was already installed or not
+	$fnConfigureTool ${toolAlias} ${toolVersion} ${toolInstallDir}
 }
 
-runTool() {
+# Determine whether the given tool needs to be installed
+# Usage: if doToolInstall <toolAlias> <toolVersion> <toolInstallDir>; then ...
+doToolInstall() {
 	local toolAlias=$1
 	local toolVersion=$2
-	local toolArgs=$(getVar "FTI_${toolAlias}_ARGS")
-	if isVarTrue "FTI_RUN_${toolAlias}" || [[ "${toolArgs}" ]]; then
-		local toolName; toolName=$(getToolName ${toolAlias})
-		local fn; fn=$(getToolFunction "run" $toolAlias)
-		logInfo "Running ${toolName}:${toolVersion}"
-		$fn ${toolAlias} ${toolArgs}
-	fi
+	local toolInstallDir=$3
+	isVarTrue FTI_FORCE_INSTALL || [[ ! -d "$toolInstallDir" ]] || [[ -z `ls -A "$toolInstallDir"` ]]
 }
 
+# Get the tool-specific function for the given tool with the given prefix
+# Usage: fn=$(getToolFunction <functionPrefix> <toolAlias>); fn <args>
 getToolFunction() {
 	local fnPrefix=$1
 	local toolAlias=$2
-	local toolName; toolName=$(getToolName ${toolAlias})
+	local toolName=$(getToolName ${toolAlias})
 	local fn=${fnPrefix}_${toolName}
 	checkFunctionExists $fn
 	echo $fn
 }
 
+# Get the tool name for the given tool alias
+# Usage: toolName=$(getToolName <toolAlias>)
 getToolName() {
 	local toolAlias=$1
 	local toolAliasLowerCase=${toolAlias,,}
@@ -340,9 +412,11 @@ getToolName() {
 	fi
 }
 
+# Get the default tool version for the given tool alias
+# Usage: toolDefaultVersion=$(getToolDefaultVersion <toolAlias>)
 getToolDefaultVersion() {
 	local toolAlias=$1
-	local toolName; toolName=$(getToolName ${toolAlias})
+	local toolName=$(getToolName ${toolAlias})
 	if [ ${toolDefaultVersionsByName[${toolName}]+_} ]; then
 		echo ${toolDefaultVersionsByName[${toolName}]}
 	else
@@ -350,10 +424,12 @@ getToolDefaultVersion() {
 	fi
 }
 
+# Get the installation directory for the given tool alias and version
+# Usage: toolInstallDir=$(getToolInstallDir <toolAlias> <toolVersion>)
 getToolInstallDir() {
 	local toolAlias=$1
 	local toolVersion=$2
-	local toolName; toolName=$(getToolName ${toolAlias})
+	local toolName=$(getToolName ${toolAlias})
 	if [ "${toolVersion}" == "latest" ]; then
 		#TODO Make configurable whether to use date-based install dir
 		echo "$(getVar FORTIFY_TOOLS_DIR)/${toolName}/latest-$(date +'%Y%m%d')"
@@ -362,132 +438,128 @@ getToolInstallDir() {
 	fi
 }
 
+# Get the download URL for the given tool alias and version
+# Usage: toolDownloadUrl=$(getToolDownloadUrl <toolAlias> <toolVersion>)
 getToolDownloadUrl() {
 	local toolAlias=$1
 	local toolVersion=$2
-	local toolName; toolName=$(getToolName ${toolAlias})
+	local toolName=$(getToolName ${toolAlias})
 	local downloadUrlWithVars;
 	if [ ${toolDownloadUrlsByNameAndVersion[${toolName}_$toolVersion]+_} ]; then
 		downloadUrlWithVars="${toolDownloadUrlsByNameAndVersion[${toolName}_$toolVersion]}"
-	elif [ ${toolDownloadUrlsByNameAndVersion[${toolName}]+_} ]; then
-		downloadUrlWithVars="${toolDownloadUrlsByNameAndVersion[${toolName}]}"
+	elif [ ${toolDownloadUrlsByNameAndVersion[${toolName}_default]+_} ]; then
+		downloadUrlWithVars="${toolDownloadUrlsByNameAndVersion[${toolName}_default]}"
 	else
 		exitWithError "No download URL defined for tool: $toolAlias"
 	fi
 	evalStringWithVars "${downloadUrlWithVars}"
 }
 
-checkFunctionExists() {
-	local fn=$1
-	if ! [[ $(type -t ${fn}) == function ]]; then
-		exitWithError "Unknown function: $1"
-	fi
+# Process the output variables by exporting them
+processVarsOut() {
+	for key in "${!VARS_OUT[@]}"
+	do
+		export $key="${VARS_OUT[$key]}"
+	done
 }
 
 
 ######################################################################################################
 ###
-### Functions for installing and running FoDUploader
+### Functions for installing and configuring FoDUploader
 ###
 ######################################################################################################
 
-install_FoDUploader() {
+installTool_FoDUploader() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
 	local jarFile=${toolInstallDir}/FoDUpload.jar
-	local downloadUrl; downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
+	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
 	
 	printUrlContents "$downloadUrl" > ${jarFile}
 }
 
-updateVars_FoDUploader() {
+configureTool_FoDUploader() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
-	VARS_OUT[FOD_UPLOAD]="${toolInstallDir}/FoDUpload.jar"
-}
-
-run_FoDUploader() {
-	local toolAlias=$1; shift;
-	local jarFile=${VARS_OUT[FOD_UPLOAD]}
 	
-	java -jar "$jarFile" "$@"
+	VARS_OUT[FOD_UPLOAD_JAR]="${toolInstallDir}/FoDUpload.jar"
+	VARS_OUT[FOD_UPLOAD]="$(getVar FOD_UPLOAD_JAR)" # For backward compatibility with fortify-ci-tools image
+	
+	local binScript=$(getVar FORTIFY_TOOLS_BIN_DIR)/FoDUpload
+	cat <<-EOF > "${binScript}"
+		#!/bin/bash
+		java -jar "$(getVar FOD_UPLOAD_JAR)" "\$@"
+	EOF
+	_chmod 755 "${binScript}"
 }
 
 
 ######################################################################################################
 ###
-### Functions for installing and running ScanCentral Client
+### Functions for installing and configuring ScanCentral Client
 ###
 ######################################################################################################
 
-install_ScanCentralClient() {
+installTool_ScanCentralClient() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
-	local downloadUrl; downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
+	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
 	unzipUrlContents "$downloadUrl" "${toolInstallDir}"
-	chmod 555 "${toolInstallDir}/bin/packagescanner"
-	chmod 555 "${toolInstallDir}/bin/pwtool"
-	chmod 555 "${toolInstallDir}/bin/scancentral"
+	_chmod 755 "${toolInstallDir}/bin/packagescanner"
+	_chmod 755 "${toolInstallDir}/bin/pwtool"
+	_chmod 755 "${toolInstallDir}/bin/scancentral"
 }
 
-updateVars_ScanCentralClient() {
+configureTool_ScanCentralClient() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
+	
+	VARS_OUT[SCANCENTRAL_HOME]="${toolInstallDir}"
 	VARS_OUT[SCANCENTRAL_BIN]="$toolInstallDir/bin"
 	VARS_OUT[PATH]="${VARS_OUT[PATH]}:${VARS_OUT[SCANCENTRAL_BIN]}"
-}
-
-run_ScanCentralClient() {
-	local toolAlias=$1; shift;
-	local binDir=${VARS_OUT[SCANCENTRAL_BIN]}
-	${binDir}/scancentral "$@"
+	
+	# Generate or update ScanCentral client.properties file
+	local clientAuthToken="$(getVar SC_CLIENT_AUTH_TOKEN $(getVar SCANCENTRAL_CLIENT_AUTH_TOKEN))"
+	local clientPropertiesFile=$(getVar SCANCENTRAL_HOME)/Core/config/client.properties
+	[ -z "${clientAuthToken}" ] || echo "client_auth_token=${clientAuthToken}" > ${clientPropertiesFile}
 }
 
 
 ######################################################################################################
 ###
-### Functions for installing and running FortifyVulnerabilityExporter
+### Functions for installing and configuring FortifyVulnerabilityExporter
 ###
 ######################################################################################################
 
-install_FortifyVulnerabilityExporter() {
+installTool_FortifyVulnerabilityExporter() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
-	local downloadUrl; downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
+	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
 	unzipUrlContents "$downloadUrl" "${toolInstallDir}"
 }
 
-updateVars_FortifyVulnerabilityExporter() {
+configureTool_FortifyVulnerabilityExporter() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
+	
 	VARS_OUT[FVE_HOME]="${toolInstallDir}"
 	VARS_OUT[FVE_JAR]="${toolInstallDir}/FortifyVulnerabilityExporter.jar"
-	VARS_OUT[FVE_PLUGINS]="${toolInstallDir}/plugins"
-	VARS_OUT[FVE_CFG]="${toolInstallDir}/config"
+	VARS_OUT[FVE_PLUGIN_DIR]="${toolInstallDir}/plugins"
+	VARS_OUT[FVE_CFG_DIR]="${toolInstallDir}/config"
+	
+	local binScript=$(getVar FORTIFY_TOOLS_BIN_DIR)/FortifyVulnerabilityExporter
+	cat <<-EOF > "${binScript}"
+		#!/bin/bash
+		java -DpluginDir="$(getVar FVE_PLUGIN_DIR)" -jar "$(getVar FVE_JAR)" "\$@"
+	EOF
+	_chmod 755 "${binScript}"
 }
 
-run_FortifyVulnerabilityExporter() {
-	local toolAlias=$1; shift;
-	local configFile=$1; shift;
-	local jarFile=${VARS_OUT[FVE_JAR]}
-	local pluginDir=${VARS_OUT[FVE_PLUGINS]}
-	if [[ ${configFile} != /* ]]; then
-		configFile=${VARS_OUT[FVE_CFG]}/$configFile
-	fi
-	if [ ! -f "${configFile}" ]; then
-		exitWithError "ERROR: Configuration file ${configFile} does not exist"
-	fi
-	java -DpluginDir=${pluginDir} -jar "${jarFile}" --export.config=${configFile} "$@"
-}
-
-if [[ "$1" == "--help" || "$1" == "-h" ]]; then
-	usage
-else 
-	run
-fi
+run "$@"
