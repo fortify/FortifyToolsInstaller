@@ -1,8 +1,10 @@
 This utility will install and optionally run various Fortify tools that are commonly used in CI/CD pipelines
 
 Usage:
-  [options] ./FortifyToolsInstaller.sh [-h|--help]
-  [options] source <(curl -sL https://raw.githubusercontent.com/fortify/FortifyToolsInstaller/main/FortifyToolsInstaller.sh)
+  ./FortifyToolsInstaller.sh <-h|--help>
+  [options] source ./FortifyToolsInstaller.sh
+  [options] source <(curl -sL https://raw.githubusercontent.com/fortify/FortifyToolsInstaller/latest/FortifyToolsInstaller.sh)
+  [options] source <(curl -sL https://raw.githubusercontent.com/fortify/FortifyToolsInstaller/<version|branch>/FortifyToolsInstaller.sh)
 
 [options] is a set of variable definitions. Variables must be specified in either lower case or uppercase
 case; mixed case variables will not be recognized. Tool aliases are case-insensitive. The following options
@@ -15,13 +17,15 @@ are recognized by this tool:
               will be installed for later use, without actually running it.
     Example: FTI_TOOLS=sc,fu:latest,fve:v1.4.1
     Supported tools, their aliases and default versions:
-
-  FTI_RUN_<toolAlias>=true|1
-    Run the tool identified by <toolAlias> without any arguments. <toolAlias> must matching with one of
-    the tool aliases listed in FTI_TOOLS.
-
-  FTI_<toolAlias>_ARGS="<toolArg1> [toolArg2] [...]"
-    Run the tool identified by <toolAlias> with the specified command line arguments
+      ScanCentralClient
+        Aliases: ScanCentralClient, ScanCentral, sc
+        Default version: latest
+      FoDUploader
+        Aliases: FoDUploader, FoDUpload, fu
+        Default version: latest
+      FortifyVulnerabilityExporter
+        Aliases: FortifyVulnerabilityExporter, fve
+        Default version: latest
 
   FTI_FORCE_INSTALL=true|1
     Force tools to be re-downloaded and installed even if they are already installed
@@ -36,3 +40,8 @@ are recognized by this tool:
   FORTIFY_TOOLS_BIN_DIR=</path/to/fortify/tools/bin/dir>
     Override Fortify tools bin directory, defaults to <FORTIFY_TOOLS_DIR>/bin
     Path where scripts and symbolic links to various Fortify tools will be installed
+
+  SCANCENTRAL_CLIENT_AUTH_TOKEN=<token>
+  SC_CLIENT_AUTH_TOKEN=<token>
+    Optional ScanCentral client authentication token to be stored in client.properties
+
