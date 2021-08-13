@@ -7,7 +7,15 @@ development lifecycle.  With Fortify, find security issues early and fix at the 
 
 The `FortifyToolsInstaller.sh` script in this repository allows for easily installing and optionally running various Fortify tools commonly used in CI/CD pipelines, like ScanCentral Client, FoD Uploader, and FortifyVulnerabilityExporter. See [USAGE.txt](USAGE.txt) for detailed instructions.
 
-**Note** `FortifyToolsInstaller.sh` is currently in early beta status; functionality may change at any time.
+## Requirements
+
+The `FortifyToolsInstaller.sh` script is designed to use as little external tools as possible, allowing it to run on most systems and containers that provide the `bash` shell. The script uses the following external software:
+
+* `bash`: Required to run the script
+* `curl` or `wget`: Required to download tool installation bundles; the script will automatically select one of these tools based on availability
+* `unzip`: Required for most tool installations to extract tool installation bundles
+* `chmod`: Optional but highly recommended to update script executable permissions
+* `mktemp`: Optional, used to generate temporary filenames for download bundles
 
 ## Developers
 
