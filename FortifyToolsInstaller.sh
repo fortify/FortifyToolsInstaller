@@ -72,7 +72,7 @@ msg() {
 # Exit with an error code after printing an error message
 # Usage: exitWithError <msg>
 exitWithError() {
-	msg "ERROR: $@"
+	logError "$@"
 	_exit 1
 }
 
@@ -86,6 +86,10 @@ logInfo() {
 # Usage: logWarn <msg>
 logWarn() {
 	msg "WARN: $@"
+}
+
+logError() {
+	msg "ERROR: $@"
 }
 
 # Check if single argument is an existing command
@@ -244,6 +248,11 @@ usage() {
 	msg "  FTI_FORCE_INSTALL=true|1"
 	msg "    Force tools to be re-downloaded and installed even if they are already installed"
 	msg ""
+	msg "  FTI_VARS_OUT=export|verify"
+	msg "    If set to 'export' (default), output variables will be exported to the shell environment."
+	msg "    The 'verify' option is useful when building docker images, to verify that the Dockerfile"
+	msg "    contains ENV instructions that match the output variables of FortifyToolsInstaller."
+	msg ""
 	msg "  FORTIFY_HOME=</path/to/fortify.home>"
 	msg "    Override Fortify home directory, defaults to ~/.fortify"
 	msg ""
@@ -289,6 +298,8 @@ run() {
 	else 
 		# This associative array is used to store environment variables related to the various tools being installed
 		declare -A VARS_OUT
+		# This array is used to store path entries to be added to the PATH variable
+		declare -a PATH_OUT
 		defineGenericOutputVars
 		installTools
 		processVarsOut
@@ -342,7 +353,7 @@ defineGenericOutputVars() {
 	VARS_OUT[FORTIFY_HOME]=$(getVar FORTIFY_HOME "${HOME}/.fortify")
 	VARS_OUT[FORTIFY_TOOLS_DIR]=$(getVar FORTIFY_TOOLS_DIR "$(getVar FORTIFY_HOME)/tools")
 	VARS_OUT[FORTIFY_TOOLS_BIN_DIR]=$(getVar FORTIFY_TOOLS_BIN_DIR "$(getVar FORTIFY_TOOLS_DIR)/bin")
-	VARS_OUT[PATH]="${PATH}:${VARS_OUT[FORTIFY_TOOLS_BIN_DIR]}"
+	PATH_OUT+=("${VARS_OUT[FORTIFY_TOOLS_BIN_DIR]}")
 }
 
 # Install the tools as configured in the FTI_TOOLS variable
@@ -458,10 +469,65 @@ getToolDownloadUrl() {
 
 # Process the output variables by exporting them
 processVarsOut() {
+	if [[ "$FTI_VARS_OUT" == "verify" ]]; then
+		verifyVarsOut
+		verifyPathOut
+	else
+		exportVarsOut
+		exportPathOut
+	fi
+}
+
+exportVarsOut() {
 	for key in "${!VARS_OUT[@]}"
 	do
 		export $key="${VARS_OUT[$key]}"
 	done
+}
+
+exportPathOut() {
+	for entry in "${PATH_OUT[@]}"
+	do
+		[[ "$PATH" == *"$entry"* ]] || export PATH="${PATH}:${entry}"
+	done
+}
+
+verifyVarsOut() {
+	local hasError=0
+	for key in "${!VARS_OUT[@]}"
+	do
+		if [[ -z "${!key}" ]]; then
+			logError "Environment variable '${key}' is not defined"
+			hasError=1
+		elif [[ "${!key}" != "${VARS_OUT[$key]}" ]]; then
+			logError "Environment variable '${key}' has unexpected value ${!key}"
+			logError=1
+		fi
+	done
+	if [[ "${hasError}" == 1 ]]; then
+		logInfo "Expected variable values:"
+		for key in "${!VARS_OUT[@]}"
+		do
+			msg "$key=${VARS_OUT[$key]}"
+		done
+		_exit 1
+	fi
+}
+
+verifyPathOut() {
+	local hasError=0
+	for entry in "${PATH_OUT[@]}"
+	do
+		if [[ "$PATH" != *"$entry"* ]]; then
+			logError "PATH is missing entry '$entry'"
+			hasError=1
+		fi
+	done
+	if [[ "${hasError}" == 1 ]]; then
+		logInfo "Expected PATH entries:"
+		echo $(IFS=: ; echo "${PATH_OUT[*]}")
+		_exit 1
+	fi
 }
 
 
@@ -522,7 +588,7 @@ configureTool_ScanCentralClient() {
 	
 	VARS_OUT[SCANCENTRAL_HOME]="${toolInstallDir}"
 	VARS_OUT[SCANCENTRAL_BIN]="$toolInstallDir/bin"
-	VARS_OUT[PATH]="${VARS_OUT[PATH]}:${VARS_OUT[SCANCENTRAL_BIN]}"
+	PATH_OUT+=("${VARS_OUT[SCANCENTRAL_BIN]}")
 	
 	# Generate or update ScanCentral client.properties file
 	local clientAuthToken="$(getVar SC_CLIENT_AUTH_TOKEN $(getVar SCANCENTRAL_CLIENT_AUTH_TOKEN))"
