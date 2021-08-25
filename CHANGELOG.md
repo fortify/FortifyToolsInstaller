@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v1.0.0...v1.1.0) (2021-08-25)
+
+
+### Features
+
+* Add support for verifying output variables ([d3cebfd](https://www.github.com/fortify/FortifyToolsInstaller/commit/d3cebfd87b441552fc519693b294ff9250ab6c9e))
+* Allow individual tool installation directories to be overridden ([afd5707](https://www.github.com/fortify/FortifyToolsInstaller/commit/afd5707eff3ecbfb7a0d85f62c5c1ead83372f1e))
+
+
+### Bug Fixes
+
+* Remove obsolete info from usage information ([995f270](https://www.github.com/fortify/FortifyToolsInstaller/commit/995f27008c2149234ed1b56bab21c5ca1a598aff))
+
 ## [1.0.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v0.0.5...v1.0.0) (2021-08-13)
 
 
