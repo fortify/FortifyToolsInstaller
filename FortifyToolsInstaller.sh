@@ -237,10 +237,7 @@ usage() {
 	msg "are recognized by this tool:"
 	msg ""
 	msg "  FTI_TOOLS=<toolAlias1[:toolVersion]>[,<toolAlias2>[:version][,...]"
-	msg "    Required: Define one or more tool aliases and optional tool versions to be installed and/or run"
-	msg "              If corresponding FTI_RUN_<toolAlias> or FTI_<toolAlias>_ARGS have been defined, the"
-	msg "              tool will be installed (if necessary) and then run immediately. Otherwise, the tool"
-	msg "              will be installed for later use, without actually running it."
+	msg "    Required: Define one or more tool aliases and optional tool versions to be installed"
 	msg "    Example: FTI_TOOLS=sc,fu:latest,fve:v1.4.1"
 	msg "    Supported tools, their aliases and default versions:"
 	printSupportedTools
