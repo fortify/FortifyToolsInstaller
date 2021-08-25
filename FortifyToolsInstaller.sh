@@ -257,6 +257,10 @@ usage() {
 	msg "    Override Fortify tools directory, defaults to <FORTIFY_HOME>/tools"
 	msg "    Tools will be installed to <FORTIFY_TOOLS_DIR>/<toolName>/<toolVersion>"
 	msg ""
+	msg "  <toolAlias|toolName>_HOME=</path/to/tool/installation/directory>"
+	msg "    Override installation directory for the given tool name or alias, defaults to"
+	msg "    <FORTIFY_TOOLS_DIR>/<toolName>/<toolVersion>"  
+	msg ""
 	msg "  FORTIFY_TOOLS_BIN_DIR=</path/to/fortify/tools/bin/dir>"
 	msg "    Override Fortify tools bin directory, defaults to <FORTIFY_TOOLS_DIR>/bin"
 	msg "    Path where scripts and symbolic links to various Fortify tools will be installed"
@@ -439,12 +443,13 @@ getToolInstallDir() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolName=$(getToolName ${toolAlias})
+	local defaultToolInstallDir;
 	if [ "${toolVersion}" == "latest" ]; then
-		#TODO Make configurable whether to use date-based install dir
-		echo "$(getVar FORTIFY_TOOLS_DIR)/${toolName}/latest-$(date +'%Y%m%d')"
+		defaultToolInstallDir="$(getVar FORTIFY_TOOLS_DIR)/${toolName}/latest-$(date +'%Y%m%d')"
 	else
-		echo "$(getVar FORTIFY_TOOLS_DIR)/${toolName}/${toolVersion}"
+		defaultToolInstallDir="$(getVar FORTIFY_TOOLS_DIR)/${toolName}/${toolVersion}"
 	fi
+	echo $(getVar "${toolAlias}_HOME" $(getVar "${toolName}_HOME" ${defaultToolInstallDir}))
 }
 
 # Get the download URL for the given tool alias and version
