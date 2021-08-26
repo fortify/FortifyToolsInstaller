@@ -47,7 +47,7 @@ jobs:
         
       - name: Test tool installation
         run: |
-            FTI_TOOLS=FU:v5.2.1 source ./FortifyToolsInstaller.sh && [ -r "${FOD_UPLOAD_JAR}" ]
+            FTI_TOOLS=FU:v5.2.1 source ./FortifyToolsInstaller.sh && [ -x "$(which FoDUpload)" ]
           
       - name: Prepare release PR
         uses: GoogleCloudPlatform/release-please-action@v2
