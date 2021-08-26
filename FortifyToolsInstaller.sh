@@ -24,14 +24,20 @@ defineTools() {
 	#   URL has been configured. The <downloadUrl> may contain properly escaped/quoted
 	#   ${toolVersion) variable.
 	#
-	# For each tool name, the following functions must exist elsewhere in this script:
-	#   - installTool_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
-	#     Download and install the tool to <toolInstallDir> if it hasn't been
-	#     installed yet or if it is being force-installed.
-	#   - configureTool_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
-	#     Perform any tool configuration tasks like adding environment variables
-	#     to VARS_OUT, generating bin-scripts, updating configuration files, ...
-	#     This function will also run if an existing installation was found.
+	# For each tool name, the following functions may be invoked:
+	#   - _preInstall_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
+	#     Optional: Commonly used to define script variables used by both the 
+	#               _install_<toolName> and _postInstall_<toolName> functions.
+	#               If available, this function is always invoked even if the 
+	#               tool has already been installed.
+	#   - _install_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
+	#     Required: Download and install the tool to <toolInstallDir> if it hasn't 
+	#              been installed yet or if it is being force-installed.
+	#   - _postInstall_<toolName> <toolAlias> <toolVersion> <toolInstallDir>
+	#     Optional: Commonly used to perform any post-installation tasks like
+	#               updating configuration files and defining output variables.
+	#               If available, this function is always invoked even if the 
+	#               tool has already been installed.
 	
 	addToolAliases        FoDUploader FoDUpload fu
 	setToolDefaultVersion FoDUploader latest
@@ -96,6 +102,12 @@ logError() {
 # Usage: if isCommand someCommand; then ...
 isCommand() {
 	command -v "$1" >/dev/null
+}
+
+# Check if single argument is an existing function
+# Usage: if isFunction someFunction; then ...
+isFunction() {
+	[[ $(type -t $1) == function ]] >/dev/null
 }
 
 # Print the contents of a given URL, using either wget or curl
@@ -165,6 +177,9 @@ getVar() {
 	local nameLower=${name,,}
 	
 	echoFirstNotBlank \
+		"${SCRIPT_VARS[$name]}" \
+		"${SCRIPT_VARS[$nameUpper]}" \
+		"${SCRIPT_VARS[$nameLower]}" \
 		"${VARS_OUT[$name]}" \
 		"${VARS_OUT[$nameUpper]}" \
 		"${VARS_OUT[$nameLower]}" \
@@ -201,7 +216,7 @@ isVarTrue() {
 # Usage: checkFunctionExists <functionName>
 checkFunctionExists() {
 	local fn=$1
-	if ! [[ $(type -t ${fn}) == function ]]; then
+	if ! isFunction $fn; then
 		exitWithError "Unknown function: $1"
 	fi
 }
@@ -253,17 +268,13 @@ usage() {
 	msg "  FORTIFY_HOME=</path/to/fortify.home>"
 	msg "    Override Fortify home directory, defaults to ~/.fortify"
 	msg ""
-	msg "  FORTIFY_TOOLS_DIR=</path/to/fortify/tools/dir>"
+	msg "  FORTIFY_TOOLS_HOME=</path/to/fortify/tools/dir>"
 	msg "    Override Fortify tools directory, defaults to <FORTIFY_HOME>/tools"
-	msg "    Tools will be installed to <FORTIFY_TOOLS_DIR>/<toolName>/<toolVersion>"
+	msg "    Tools will be installed to <FORTIFY_TOOLS_HOME>/<toolName>/<toolVersion>"
 	msg ""
 	msg "  <toolAlias|toolName>_HOME=</path/to/tool/installation/directory>"
 	msg "    Override installation directory for the given tool name or alias, defaults to"
-	msg "    <FORTIFY_TOOLS_DIR>/<toolName>/<toolVersion>"  
-	msg ""
-	msg "  FORTIFY_TOOLS_BIN_DIR=</path/to/fortify/tools/bin/dir>"
-	msg "    Override Fortify tools bin directory, defaults to <FORTIFY_TOOLS_DIR>/bin"
-	msg "    Path where scripts and symbolic links to various Fortify tools will be installed"
+	msg "    <FORTIFY_TOOLS_HOME>/<toolName>/<toolVersion>"  
 	msg ""
 	msg "  SCANCENTRAL_CLIENT_AUTH_TOKEN=<token>"
 	msg "  SC_CLIENT_AUTH_TOKEN=<token>"
@@ -297,6 +308,8 @@ run() {
 	if [[ "$1" == "--help" || "$1" == "-h" ]]; then
 		usage
 	else 
+		# This associative array is used to store variables shared between various functions
+		declare -A SCRIPT_VARS
 		# This associative array is used to store environment variables related to the various tools being installed
 		declare -A VARS_OUT
 		# This array is used to store path entries to be added to the PATH variable
@@ -351,10 +364,8 @@ addToolDownloadUrl() {
 # Define generic output variables
 # Usage: defineGenericOutputVars
 defineGenericOutputVars() {
-	VARS_OUT[FORTIFY_HOME]=$(getVar FORTIFY_HOME "${HOME}/.fortify")
-	VARS_OUT[FORTIFY_TOOLS_DIR]=$(getVar FORTIFY_TOOLS_DIR "$(getVar FORTIFY_HOME)/tools")
-	VARS_OUT[FORTIFY_TOOLS_BIN_DIR]=$(getVar FORTIFY_TOOLS_BIN_DIR "$(getVar FORTIFY_TOOLS_DIR)/bin")
-	PATH_OUT+=("${VARS_OUT[FORTIFY_TOOLS_BIN_DIR]}")
+	SCRIPT_VARS[FORTIFY_HOME]=$(getVar FORTIFY_HOME "${HOME}/.fortify")
+	SCRIPT_VARS[FORTIFY_TOOLS_HOME]=$(getVar FORTIFY_TOOLS_HOME "$(getVar FORTIFY_HOME)/tools")
 }
 
 # Install the tools as configured in the FTI_TOOLS variable
@@ -362,7 +373,6 @@ defineGenericOutputVars() {
 installTools() {
 	local fciTools=$(getVar FTI_TOOLS)
 	[ -z "$fciTools" ] && exitWithUsage "FTI_TOOLS option must be defined"
-	mkdir -p $(getVar FORTIFY_TOOLS_BIN_DIR)
 	for toolAndVersion in ${fciTools//,/ }; do
 		IFS=':' read -r toolAlias toolVersion <<< "$toolAndVersion"
 		toolVersion=${toolVersion:-$(getToolDefaultVersion ${toolAlias})}
@@ -378,19 +388,26 @@ installTool() {
 	local toolName=$(getToolName ${toolAlias})
 	local toolInstallDir=$(getToolInstallDir ${toolAlias} ${toolVersion})
 	
-	local fnInstallTool=$(getToolFunction "installTool" $toolAlias)
-	local fnConfigureTool=$(getToolFunction "configureTool" $toolAlias)
+	# Get the tool-specific functions. We always run pre-install and post-install
+	# functions if available, even if tool is already installed.
+	local fnPreInstall=$(getToolFunction "_preInstall" $toolAlias)
+	local fnInstall=$(getToolFunction "_install" $toolAlias)
+	local fnPostInstall=$(getToolFunction "_postInstall" $toolAlias)
 	
+	# Install function is required, other functions are optional
+	checkFunctionExists $fnInstall
+	
+	isFunction $fnPreInstall && $fnPreInstall ${toolAlias} ${toolVersion} ${toolInstallDir}
 	if doToolInstall ${toolAlias} ${toolVersion} ${toolInstallDir}; then
 		rm -rf "$toolInstallDir" 2> /dev/null
 		mkdir -p "$toolInstallDir"
 		logInfo "Installing ${toolName}:${toolVersion} to ${toolInstallDir}"
-		$fnInstallTool ${toolAlias} ${toolVersion} ${toolInstallDir}
+		$fnInstall ${toolAlias} ${toolVersion} ${toolInstallDir}
 	else
 		logInfo "Found existing ${toolName}:${toolVersion} in ${toolInstallDir}"
 	fi
-	# We always want to run post-install, independent od whether the tools was already installed or not
-	$fnConfigureTool ${toolAlias} ${toolVersion} ${toolInstallDir}
+	isFunction $fnPostInstall && $fnPostInstall ${toolAlias} ${toolVersion} ${toolInstallDir}
+	addOptionalBinDirToPathOut "${toolInstallDir}/bin"
 }
 
 # Determine whether the given tool needs to be installed
@@ -409,7 +426,6 @@ getToolFunction() {
 	local toolAlias=$2
 	local toolName=$(getToolName ${toolAlias})
 	local fn=${fnPrefix}_${toolName}
-	checkFunctionExists $fn
 	echo $fn
 }
 
@@ -445,9 +461,9 @@ getToolInstallDir() {
 	local toolName=$(getToolName ${toolAlias})
 	local defaultToolInstallDir;
 	if [ "${toolVersion}" == "latest" ]; then
-		defaultToolInstallDir="$(getVar FORTIFY_TOOLS_DIR)/${toolName}/latest-$(date +'%Y%m%d')"
+		defaultToolInstallDir="$(getVar FORTIFY_TOOLS_HOME)/${toolName}/latest-$(date +'%Y%m%d')"
 	else
-		defaultToolInstallDir="$(getVar FORTIFY_TOOLS_DIR)/${toolName}/${toolVersion}"
+		defaultToolInstallDir="$(getVar FORTIFY_TOOLS_HOME)/${toolName}/${toolVersion}"
 	fi
 	echo $(getVar "${toolAlias}_HOME" $(getVar "${toolName}_HOME" ${defaultToolInstallDir}))
 }
@@ -467,6 +483,17 @@ getToolDownloadUrl() {
 		exitWithError "No download URL defined for tool: $toolAlias"
 	fi
 	evalStringWithVars "${downloadUrlWithVars}"
+}
+
+addOptionalBinDirToPathOut() {
+	local binDir=$1
+	if [[ -d "${binDir}" ]]; then
+		if [[ ! -x "${binDir}" ]]; then
+			logWarn "Bin-directory found but not accessible: ${binDir}"
+		else
+			PATH_OUT+=("${binDir}")
+		fi
+	fi
 }
 
 # Process the output variables by exporting them
@@ -490,7 +517,8 @@ exportVarsOut() {
 exportPathOut() {
 	for entry in "${PATH_OUT[@]}"
 	do
-		[[ "$PATH" == *"$entry"* ]] || export PATH="${PATH}:${entry}"
+		# We add each entry to the front of the path, independent of whether it already exists, to make sure latest installation is used
+		export PATH="${entry}:${PATH}"
 	done
 }
 
@@ -539,7 +567,7 @@ verifyPathOut() {
 ###
 ######################################################################################################
 
-installTool_FoDUploader() {
+_install_FoDUploader() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
@@ -547,20 +575,19 @@ installTool_FoDUploader() {
 	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
 	
 	printUrlContents "$downloadUrl" > ${jarFile}
+	_addBinScript_FoDUploader "${toolInstallDir}" "${jarFile}"
 }
 
-configureTool_FoDUploader() {
-	local toolAlias=$1
-	local toolVersion=$2
-	local toolInstallDir=$3
+_addBinScript_FoDUploader() {
+	local toolInstallDir=$1
+	local jarFile=$2
 	
-	VARS_OUT[FOD_UPLOAD_JAR]="${toolInstallDir}/FoDUpload.jar"
-	VARS_OUT[FOD_UPLOAD]="$(getVar FOD_UPLOAD_JAR)" # For backward compatibility with fortify-ci-tools image
-	
-	local binScript=$(getVar FORTIFY_TOOLS_BIN_DIR)/FoDUpload
+	local binDir=${toolInstallDir}/bin
+	local binScript=${binDir}/FoDUpload
+	mkdir -p "${binDir}"
 	cat <<-EOF > "${binScript}"
 		#!/bin/bash
-		java -jar "$(getVar FOD_UPLOAD_JAR)" "\$@"
+		java -jar "${jarFile}" "\$@"
 	EOF
 	_chmod 755 "${binScript}"
 }
@@ -572,7 +599,7 @@ configureTool_FoDUploader() {
 ###
 ######################################################################################################
 
-installTool_ScanCentralClient() {
+_install_ScanCentralClient() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
@@ -583,18 +610,14 @@ installTool_ScanCentralClient() {
 	_chmod 755 "${toolInstallDir}/bin/scancentral"
 }
 
-configureTool_ScanCentralClient() {
+_postInstall_ScanCentralClient() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
 	
-	VARS_OUT[SCANCENTRAL_HOME]="${toolInstallDir}"
-	VARS_OUT[SCANCENTRAL_BIN]="$toolInstallDir/bin"
-	PATH_OUT+=("${VARS_OUT[SCANCENTRAL_BIN]}")
-	
 	# Generate or update ScanCentral client.properties file
 	local clientAuthToken="$(getVar SC_CLIENT_AUTH_TOKEN $(getVar SCANCENTRAL_CLIENT_AUTH_TOKEN))"
-	local clientPropertiesFile=$(getVar SCANCENTRAL_HOME)/Core/config/client.properties
+	local clientPropertiesFile=${toolInstallDir}/Core/config/client.properties
 	[ -z "${clientAuthToken}" ] || echo "client_auth_token=${clientAuthToken}" > ${clientPropertiesFile}
 }
 
@@ -605,28 +628,25 @@ configureTool_ScanCentralClient() {
 ###
 ######################################################################################################
 
-installTool_FortifyVulnerabilityExporter() {
+_install_FortifyVulnerabilityExporter() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
 	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
 	unzipUrlContents "$downloadUrl" "${toolInstallDir}"
+	_addBinScript_FortifyVulnerabilityExporter "${toolInstallDir}" "${toolInstallDir}/FortifyVulnerabilityExporter.jar"
 }
 
-configureTool_FortifyVulnerabilityExporter() {
-	local toolAlias=$1
-	local toolVersion=$2
-	local toolInstallDir=$3
+_addBinScript_FortifyVulnerabilityExporter() {
+	local toolInstallDir=$1
+	local jarFile=$2
 	
-	VARS_OUT[FVE_HOME]="${toolInstallDir}"
-	VARS_OUT[FVE_JAR]="${toolInstallDir}/FortifyVulnerabilityExporter.jar"
-	VARS_OUT[FVE_PLUGIN_DIR]="${toolInstallDir}/plugins"
-	VARS_OUT[FVE_CFG_DIR]="${toolInstallDir}/config"
-	
-	local binScript=$(getVar FORTIFY_TOOLS_BIN_DIR)/FortifyVulnerabilityExporter
+	local binDir=${toolInstallDir}/bin
+	local binScript=${binDir}/FortifyVulnerabilityExporter
+	mkdir -p "${binDir}"
 	cat <<-EOF > "${binScript}"
 		#!/bin/bash
-		java -DpluginDir="$(getVar FVE_PLUGIN_DIR)" -jar "$(getVar FVE_JAR)" "\$@"
+		java -DpluginDir="${toolInstallDir}/plugins" -jar "${jarFile}" "\$@"
 	EOF
 	_chmod 755 "${binScript}"
 }
