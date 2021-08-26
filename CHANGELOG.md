@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v1.1.0...v2.0.0) (2021-08-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* General: Renamed FORTIFY_TOOLS_DIR input variable to FORTIFY_TOOLS_HOME for consistency
+* General: Removed FORTIFY_TOOLS_BIN_DIR input variable, as each tool now uses it's own bin-directory
+* FoDUploader: Moved bin-script to tool-specific bin directory
+* FoDUploader: Removed all output variables, as they are not needed when invoking the tool using the provided bin script
+* FortifyVulnerabilityExporter: Moved bin-script to tool-specific bin directory
+* FortifyVulnerabilityExporter: Removed all output variables, as they are not needed when invoking the tool using the provided bin script
+* ScanCentral Client: Removed all output variables, as they are not needed for invoking the tool
+
+### Bug Fixes
+
+* General: Bin-directories from latest FTI run are now always added to the front of the path, to make sure appropriate version is being run if FTI is invoked multiple times with different tool versions ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+
+
+### Code Refactoring
+
+* FoDUploader: Moved bin-script to tool-specific bin directory ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+* FoDUploader: Removed all output variables, as they are not needed when invoking the tool using the provided bin script ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+* FortifyVulnerabilityExporter: Moved bin-script to tool-specific bin directory ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+* FortifyVulnerabilityExporter: Removed all output variables, as they are not needed when invoking the tool using the provided bin script ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+* General: Removed FORTIFY_TOOLS_BIN_DIR input variable, as each tool now uses it's own bin-directory ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+* General: Renamed FORTIFY_TOOLS_DIR input variable to FORTIFY_TOOLS_HOME for consistency ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+* ScanCentral Client: Removed all output variables, as they are not needed for invoking the tool ([e3efa57](https://www.github.com/fortify/FortifyToolsInstaller/commit/e3efa574f9bcc2ff69f21de7c2c598865f601a0e))
+
 ## [1.1.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v1.0.0...v1.1.0) (2021-08-25)
 
 
