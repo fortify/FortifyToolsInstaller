@@ -43,16 +43,45 @@ defineTools() {
 	setToolDefaultVersion FoDUploader latest
 	addToolDownloadUrl    FoDUploader default 'https://github.com/fod-dev/fod-uploader-java/releases/download/${toolVersion}/FodUpload.jar'
 	addToolDownloadUrl    FoDUploader latest  'https://github.com/fod-dev/fod-uploader-java/releases/latest/download/FodUpload.jar'
+	addToolSHA256         FoDUploader latest  'f52e070309cc5539ed1937cd16c370ccf5c09d5cf4e80708766ab43959d4fa20'
+	addToolSHA256         FoDUploader v5.2.1  'f52e070309cc5539ed1937cd16c370ccf5c09d5cf4e80708766ab43959d4fa20'
+	addToolSHA256         FoDUploader v5.2.0  '1e08c0fc1269e39fe502fe3ab301182e2ef2a8884328ac2beec092873d308100'
+	addToolSHA256         FoDUploader v5.0.1  'fc31198af03c074bc9190b85d6b9acf42495163f2d7db763c8bb4ed1df6b7d92'
+	addToolSHA256         FoDUploader v5.0.0  '7d06869581879ffcb055ab0c2f771d69e21f90caa4a22440d918a2f18b0a3125'
+	addToolSHA256         FoDUploader v4.0.4  'adf474e314e2ba2b2e2d8a63ef8e5bc513f49648c1979af2ce04a3191edd6130'
+	addToolSHA256         FoDUploader v4.0.3  '4c69b360752a74d5cd728fd8f5b519bbed4af5d6fff47dd3e849a924ba31d0c1'
+	addToolSHA256         FoDUploader v4.0.2  '47b3056c7dcee7b790670458f65a21757c422e67b178d6ac907ed32aead004be'
+	addToolSHA256         FoDUploader v4.0.1  '7c5abde97d07288ae146160c4eee14091606b26590536b00d5e7b9bba31f0507'
+	addToolSHA256         FoDUploader v4.0.0  '6921614493c070d1788c9326a43ce7d65cad5427d7de47dd2548be74c1defa7c'
 	
 	addToolAliases        ScanCentralClient ScanCentral sc
 	setToolDefaultVersion ScanCentralClient latest
 	addToolDownloadUrl    ScanCentralClient default 'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_${toolVersion}_x64.zip'
 	addToolDownloadUrl    ScanCentralClient latest  'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_Latest_x64.zip'
+	addToolSHA256         ScanCentralClient latest  'c5e431abe19166a4855d1bb4531efdd9f0dd4829777d00d98da330a30d43ca6a'
+	addToolSHA256         ScanCentralClient 21.1.2  '313d37acc652edba9657fbc8fed1d811ad0df014636f02314a97865c48244dd6'
+	addToolSHA256         ScanCentralClient 20.2.0  'c559e1e08c0d90af71e77bdbb806731f818f59d4b3da7e41c02a307495c38d06'
+	addToolSHA256         ScanCentralClient 20.1.0  '4a315c9ab9c61978b47772945e29063545478ae2f0e4574c0111bce891c04eb5'
+	
 	
 	addToolAliases        FortifyVulnerabilityExporter fve
 	setToolDefaultVersion FortifyVulnerabilityExporter latest
 	addToolDownloadUrl    FortifyVulnerabilityExporter default 'https://github.com/fortify/FortifyVulnerabilityExporter/releases/download/${toolVersion}/FortifyVulnerabilityExporter.zip'
 	addToolDownloadUrl    FortifyVulnerabilityExporter latest  'https://github.com/fortify/FortifyVulnerabilityExporter/releases/latest/download/FortifyVulnerabilityExporter.zip'
+	addToolSHA256         FortifyVulnerabilityExporter latest  'cc86851b0b5adada0b04f43b93693a637ab3735e85d25246f859535aeb7835cf'
+	addToolSHA256         FortifyVulnerabilityExporter v1.5.0  'cc86851b0b5adada0b04f43b93693a637ab3735e85d25246f859535aeb7835cf'
+	addToolSHA256         FortifyVulnerabilityExporter v1.4.1  '6e9fa005364513593ab820c79d2c1f05283ff9769fb313c669f0159c395e3d4c'
+	addToolSHA256         FortifyVulnerabilityExporter v1.4.0  '63b6e90c5a06f3db6d913121a5fb8a7578d2a1c65a4bdc8cfd6fd0aef286d296'
+	addToolSHA256         FortifyVulnerabilityExporter v1.3.1  '8b3f1d8696ed183a9ae0e005bc4165571b0be3e80e59038eb16a446e3ef5e91b'
+	addToolSHA256         FortifyVulnerabilityExporter v1.3.0  '28515fd51112b803a1d154884efd3743013895bb3f0037e4eedb2a8b18659bb7'
+	addToolSHA256         FortifyVulnerabilityExporter v1.2.1  '1badaf7f91be4482d7666d398893e1b68e24d446811843bee74aea5144f0fe1d'
+	addToolSHA256         FortifyVulnerabilityExporter v1.2.0  '05acd1451bcd5b7639e5abb43d42544a6ff5b53d3e9f6c49891094a4d9d6fc6a'
+	addToolSHA256         FortifyVulnerabilityExporter v1.1.3  '07b885a3690d111a0bc3b4e40581cd148bd36435255f1a7638c574ebeb8975e1'
+	addToolSHA256         FortifyVulnerabilityExporter v1.1.2  '5c27aa10b9fa8cd6b49317543f9fb0ae8e53d6d099f62daadd3b8086f3e56500'
+	addToolSHA256         FortifyVulnerabilityExporter v1.1.1  'd27c234a0a85ac79ab0f317777a151b70c8899f3c8bdf909779823555227d98f'
+	addToolSHA256         FortifyVulnerabilityExporter v1.1.0  '05a6fed8ded797ab4afb0bdede2a53fa830c218f9944cc076fcaab316505d20d'
+	addToolSHA256         FortifyVulnerabilityExporter v1.0.1  '23f499053ed2663084ca509d292d4190c1a609941371d7094a7b3cf474363d4f'
+	addToolSHA256         FortifyVulnerabilityExporter v1.0.0  '2edf4bc065e48cb8a2571752dfbe5a944495824e8a3c899e06206a24bf15562c'
 }
 
 ######################################################################################################
@@ -122,20 +151,6 @@ printUrlContents() {
 	else 
 		exitWithError "Either wget or curl must be installed to download files"
 	fi
-}
-
-# Unzip the contents of a given URL
-# Usage: unzipUrlContents <url> <unzipDir>
-unzipUrlContents() {
-	local url=$1
-	local unzipDir=$2
-	local tmpFile=$(_mktemp)
-	if ! isCommand unzip; then
-		exitWithError "Unzip command must be installed to extract contents from $url"
-	fi
-	printUrlContents "$url" > "$tmpFile"
-	unzip -qod "$unzipDir" "$tmpFile"
-	rm -f "$tmpFile"
 }
 
 # Get a temporary file name
@@ -260,6 +275,12 @@ usage() {
 	msg "  FTI_FORCE_INSTALL=true|1"
 	msg "    Force tools to be re-downloaded and installed even if they are already installed"
 	msg ""
+	msg "  FTI_DISABLE_INTEGRITY_CHECK=true|1"
+	msg "    Disable integrity check for downloaded tools. It is recommended to leave integrity checks"
+	msg "    enabled; also see <toolAlias|toolName>_SHA256 below. Note that hashes for 'latest' versions"
+	msg "    may change whenever a new tool version is released, which will cause the integrity check to"
+	msg "    fail until this script has been updated with the correct hash."
+	msg ""
 	msg "  FTI_VARS_OUT=export|verify"
 	msg "    If set to 'export' (default), output variables will be exported to the shell environment."
 	msg "    The 'verify' option is useful when building docker images, to verify that the Dockerfile"
@@ -274,7 +295,12 @@ usage() {
 	msg ""
 	msg "  <toolAlias|toolName>_HOME=</path/to/tool/installation/directory>"
 	msg "    Override installation directory for the given tool name or alias, defaults to"
-	msg "    <FORTIFY_TOOLS_HOME>/<toolName>/<toolVersion>"  
+	msg "    <FORTIFY_TOOLS_HOME>/<toolName>/<toolVersion>"
+	msg ""
+	msg "  <toolAlias|toolName>_SHA256=<SHA256 for given tool name being installed>"
+	msg "    Override SHA256 hash for the given tool alias or name, for the version specified in the"
+	msg "    FTI_TOOLS variable. This may be useful in case this script hasn't been updated yet with"
+	msg "    hashes for new tool versions."
 	msg ""
 	msg "  SCANCENTRAL_CLIENT_AUTH_TOKEN=<token>"
 	msg "  SC_CLIENT_AUTH_TOKEN=<token>"
@@ -301,7 +327,7 @@ printSupportedTools() {
 run() {
 	local args="$@"
 	
-	declare -A toolNamesByAlias toolFriendlyAliasesByName toolDefaultVersionsByName toolDownloadUrlsByNameAndVersion
+	declare -A toolNamesByAlias toolFriendlyAliasesByName toolDefaultVersionsByName toolDownloadUrlsByNameAndVersion toolSHA256ByNameAndVersion
 	declare -a toolFriendlyAliases; 
 	defineTools
 	
@@ -359,6 +385,15 @@ addToolDownloadUrl() {
 	local toolVersion=$2;
 	local toolDownloadUrl=$3;
 	toolDownloadUrlsByNameAndVersion[${toolName}_${toolVersion}]="${toolDownloadUrl}"
+}
+
+# Add tool SHA256
+# Usage: addToolSHA256 <toolName> <toolVersion|'default'> <SHA256>
+addToolSHA256() {
+	local toolName=$1;
+	local toolVersion=$2;
+	local toolSHA256=$3;
+	toolSHA256ByNameAndVersion[${toolName}_${toolVersion}]="${toolSHA256}"
 }
 
 # Define generic output variables
@@ -485,6 +520,65 @@ getToolDownloadUrl() {
 	evalStringWithVars "${downloadUrlWithVars}"
 }
 
+# Get the SHA256 for the given tool alias and version
+# Usage: toolSHA256=$(getToolSHA256 <toolAlias> <toolVersion>)
+getToolSHA256() {
+	local toolAlias=$1
+	local toolVersion=$2
+	local toolName=$(getToolName ${toolAlias})
+	local sha256Override=$(getVar "${toolAlias}_SHA256" $(getVar "${toolName}_SHA256" ""))
+	if [[ "${sha256Override}" != "" ]]; then
+		echo "${sha256Override}"
+	elif [ ${toolSHA256ByNameAndVersion[${toolName}_$toolVersion]+_} ]; then
+		echo "${toolSHA256ByNameAndVersion[${toolName}_$toolVersion]}"
+	else
+		exitWithError "No SHA256 hash defined for $toolAlias:$toolVersion"
+	fi
+}
+
+# Check the SHA256 for the given tool alias and version
+# Usage: checkToolSHA256 <toolAlias> <toolVersion> <downloadedFile>
+checkToolSHA256() {
+	local toolAlias=$1
+	local toolVersion=$2
+	local toolDownload=$3
+	if ! isVarTrue FTI_DISABLE_INTEGRITY_CHECK; then
+		local hash=$(sha256sum "$toolDownload" | head -c64)
+		local expectedHash=$(getToolSHA256 $toolAlias $toolVersion)
+		if [[ "${hash}" != "${expectedHash}" ]]; then
+			exitWithError "Got SHA256 hash ${hash} for $toolAlias:$toolVersion, expected ${expectedHash} instead"
+		fi
+	fi
+}
+
+# Download and save the contents for a given tool
+# Usage: downloadAndSaveToolContents <toolAlias> <toolVersion> <outputFile>
+downloadAndSaveToolContents() {
+	local toolAlias=$1
+	local toolVersion=$2
+	local saveLocation=$3
+	local url=$(getToolDownloadUrl $toolAlias $toolVersion)
+	printUrlContents "$url" > "$saveLocation"
+	checkToolSHA256 $toolAlias $toolVersion "$saveLocation"
+}
+
+# Download and unzip the contents for a given tool
+# Usage: downloadAndUnzipToolContents <toolAlias> <toolVersion> <unzipDir>
+downloadAndUnzipToolContents() {
+	local toolAlias=$1
+	local toolVersion=$2
+	local unzipDir=$3
+	local url=$(getToolDownloadUrl $toolAlias $toolVersion)
+	local tmpFile=$(_mktemp)
+	if ! isCommand unzip; then
+		exitWithError "Unzip command must be installed to extract contents from $url"
+	fi
+	printUrlContents "$url" > "$tmpFile"
+	checkToolSHA256 $toolAlias $toolVersion "$tmpFile"
+	unzip -qod "$unzipDir" "$tmpFile"
+	rm -f "$tmpFile"
+}
+
 addOptionalBinDirToPathOut() {
 	local binDir=$1
 	if [[ -d "${binDir}" ]]; then
@@ -572,9 +666,8 @@ _install_FoDUploader() {
 	local toolVersion=$2
 	local toolInstallDir=$3
 	local jarFile=${toolInstallDir}/FoDUpload.jar
-	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
 	
-	printUrlContents "$downloadUrl" > ${jarFile}
+	downloadAndSaveToolContents "$toolAlias" "$toolVersion" "${jarFile}"
 	_addBinScript_FoDUploader "${toolInstallDir}" "${jarFile}"
 }
 
@@ -603,8 +696,8 @@ _install_ScanCentralClient() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
-	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
-	unzipUrlContents "$downloadUrl" "${toolInstallDir}"
+	
+	downloadAndUnzipToolContents "$toolAlias" "$toolVersion" "${toolInstallDir}"
 	_chmod 755 "${toolInstallDir}/bin/packagescanner"
 	_chmod 755 "${toolInstallDir}/bin/pwtool"
 	_chmod 755 "${toolInstallDir}/bin/scancentral"
@@ -632,8 +725,8 @@ _install_FortifyVulnerabilityExporter() {
 	local toolAlias=$1
 	local toolVersion=$2
 	local toolInstallDir=$3
-	local downloadUrl=$(getToolDownloadUrl $toolAlias $toolVersion)
-	unzipUrlContents "$downloadUrl" "${toolInstallDir}"
+	
+	downloadAndUnzipToolContents "$toolAlias" "$toolVersion" "${toolInstallDir}"
 	_addBinScript_FortifyVulnerabilityExporter "${toolInstallDir}" "${toolInstallDir}/FortifyVulnerabilityExporter.jar"
 }
 
