@@ -6,15 +6,16 @@ Usage:
   [options] source <(curl -sL https://raw.githubusercontent.com/fortify/FortifyToolsInstaller/latest/FortifyToolsInstaller.sh)
   [options] source <(curl -sL https://raw.githubusercontent.com/fortify/FortifyToolsInstaller/<version|branch>/FortifyToolsInstaller.sh)
 
+Note that as a best practice, you may want to verify the integrity of the script before executing it
+from a remote location, for example by running sha256sum on the downloaded script and comparing this
+with a known SHA256 hash.
+
 [options] is a set of variable definitions. Variables must be specified in either lower case or uppercase
 case; mixed case variables will not be recognized. Tool aliases are case-insensitive. The following options
 are recognized by this tool:
 
   FTI_TOOLS=<toolAlias1[:toolVersion]>[,<toolAlias2>[:version][,...]
-    Required: Define one or more tool aliases and optional tool versions to be installed and/or run
-              If corresponding FTI_RUN_<toolAlias> or FTI_<toolAlias>_ARGS have been defined, the
-              tool will be installed (if necessary) and then run immediately. Otherwise, the tool
-              will be installed for later use, without actually running it.
+    Required: Define one or more tool aliases and optional tool versions to be installed
     Example: FTI_TOOLS=sc,fu:latest,fve:v1.4.1
     Supported tools, their aliases and default versions:
       ScanCentralClient
@@ -30,16 +31,32 @@ are recognized by this tool:
   FTI_FORCE_INSTALL=true|1
     Force tools to be re-downloaded and installed even if they are already installed
 
+  FTI_DISABLE_INTEGRITY_CHECK=true|1
+    Disable integrity check for downloaded tools. It is recommended to leave integrity checks
+    enabled; also see <toolAlias|toolName>_SHA256 below. Note that hashes for 'latest' versions
+    may change whenever a new tool version is released, which will cause the integrity check to
+    fail until this script has been updated with the correct hash.
+
+  FTI_VARS_OUT=export|verify
+    If set to 'export' (default), output variables will be exported to the shell environment.
+    The 'verify' option is useful when building docker images, to verify that the Dockerfile
+    contains ENV instructions that match the output variables of FortifyToolsInstaller.
+
   FORTIFY_HOME=</path/to/fortify.home>
     Override Fortify home directory, defaults to ~/.fortify
 
-  FORTIFY_TOOLS_DIR=</path/to/fortify/tools/dir>
+  FORTIFY_TOOLS_HOME=</path/to/fortify/tools/dir>
     Override Fortify tools directory, defaults to <FORTIFY_HOME>/tools
-    Tools will be installed to <FORTIFY_TOOLS_DIR>/<toolName>/<toolVersion>
+    Tools will be installed to <FORTIFY_TOOLS_HOME>/<toolName>/<toolVersion>
 
-  FORTIFY_TOOLS_BIN_DIR=</path/to/fortify/tools/bin/dir>
-    Override Fortify tools bin directory, defaults to <FORTIFY_TOOLS_DIR>/bin
-    Path where scripts and symbolic links to various Fortify tools will be installed
+  <toolAlias|toolName>_HOME=</path/to/tool/installation/directory>
+    Override installation directory for the given tool name or alias, defaults to
+    <FORTIFY_TOOLS_HOME>/<toolName>/<toolVersion>
+
+  <toolAlias|toolName>_SHA256=<SHA256 for given tool name being installed>
+    Override SHA256 hash for the given tool alias or name, for the version specified in the
+    FTI_TOOLS variable. This may be useful in case this script hasn't been updated yet with
+    hashes for new tool versions.
 
   SCANCENTRAL_CLIENT_AUTH_TOKEN=<token>
   SC_CLIENT_AUTH_TOKEN=<token>

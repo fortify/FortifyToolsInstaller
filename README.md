@@ -13,6 +13,7 @@ The `FortifyToolsInstaller.sh` script is designed to use as little external tool
 
 * `bash`: Required to run the script
 * `curl` or `wget`: Required to download tool installation bundles; the script will automatically select one of these tools based on availability
+* `sha256sum`: Required to check integrity of downloaded installation bundles
 * `unzip`: Required for most tool installations to extract tool installation bundles
 * `chmod`: Optional but highly recommended to update script executable permissions
 * `mktemp`: Optional, used to generate temporary filenames for download bundles
