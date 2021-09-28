@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.0.0...v2.1.0) (2021-09-28)
+
+
+### Features
+
+* Add integrity check for downloaded tool bundles ([7c4253a](https://www.github.com/fortify/FortifyToolsInstaller/commit/7c4253a2bd4014ee71bcfb7a2b345ad28416e963))
+
 ## [2.0.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v1.1.0...v2.0.0) (2021-08-26)
 
 
