@@ -43,7 +43,8 @@ defineTools() {
 	setToolDefaultVersion FoDUploader latest
 	addToolDownloadUrl    FoDUploader default 'https://github.com/fod-dev/fod-uploader-java/releases/download/${toolVersion}/FodUpload.jar'
 	addToolDownloadUrl    FoDUploader latest  'https://github.com/fod-dev/fod-uploader-java/releases/latest/download/FodUpload.jar'
-	addToolSHA256         FoDUploader latest  'f52e070309cc5539ed1937cd16c370ccf5c09d5cf4e80708766ab43959d4fa20'
+	addToolSHA256         FoDUploader latest  '302e394dd0a84321a388ae0a802c5847dcfe52284e2fe9d7d524952aea8214f0'
+	addToolSHA256         FoDUploader v5.3.0  '302e394dd0a84321a388ae0a802c5847dcfe52284e2fe9d7d524952aea8214f0'
 	addToolSHA256         FoDUploader v5.2.1  'f52e070309cc5539ed1937cd16c370ccf5c09d5cf4e80708766ab43959d4fa20'
 	addToolSHA256         FoDUploader v5.2.0  '1e08c0fc1269e39fe502fe3ab301182e2ef2a8884328ac2beec092873d308100'
 	addToolSHA256         FoDUploader v5.0.1  'fc31198af03c074bc9190b85d6b9acf42495163f2d7db763c8bb4ed1df6b7d92'
@@ -58,7 +59,8 @@ defineTools() {
 	setToolDefaultVersion ScanCentralClient latest
 	addToolDownloadUrl    ScanCentralClient default 'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_${toolVersion}_x64.zip'
 	addToolDownloadUrl    ScanCentralClient latest  'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_Latest_x64.zip'
-	addToolSHA256         ScanCentralClient latest  'c5e431abe19166a4855d1bb4531efdd9f0dd4829777d00d98da330a30d43ca6a'
+	addToolSHA256         ScanCentralClient latest  '055e26cb8ee81f148536a9e94b64a07d388a243291b48293df17d7ee2b4f2d58'
+	addToolSHA256         ScanCentralClient 21.2.0  '055e26cb8ee81f148536a9e94b64a07d388a243291b48293df17d7ee2b4f2d58'
 	addToolSHA256         ScanCentralClient 21.1.2  '313d37acc652edba9657fbc8fed1d811ad0df014636f02314a97865c48244dd6'
 	addToolSHA256         ScanCentralClient 20.2.0  'c559e1e08c0d90af71e77bdbb806731f818f59d4b3da7e41c02a307495c38d06'
 	addToolSHA256         ScanCentralClient 20.1.0  '4a315c9ab9c61978b47772945e29063545478ae2f0e4574c0111bce891c04eb5'
