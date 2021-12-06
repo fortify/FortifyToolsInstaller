@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.2.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.1.0...v2.2.0) (2021-12-06)
+
+
+### Features
+
+* Add support for latest FoDUploader version 5.3.0 ([20222c8](https://www.github.com/fortify/FortifyToolsInstaller/commit/20222c8231b4d31b590d01b03ed1ef9f5ce26366))
+* Add support for latest ScanCentral Client version 21.2.0 ([20222c8](https://www.github.com/fortify/FortifyToolsInstaller/commit/20222c8231b4d31b590d01b03ed1ef9f5ce26366))
+
 ## [2.1.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.0.0...v2.1.0) (2021-09-28)
 
 
