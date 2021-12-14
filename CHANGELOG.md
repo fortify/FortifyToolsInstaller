@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.3.1](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.3.0...v2.3.1) (2021-12-14)
+
+
+### Bug Fixes
+
+* Update integrity check for ScanCentralClient:latest ([394a3e5](https://www.github.com/fortify/FortifyToolsInstaller/commit/394a3e5b3607610fd3aa9114f9801309b28aaefd))
+
 ## [2.3.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.2.0...v2.3.0) (2021-12-14)
 
 
