@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.2.0...v2.3.0) (2021-12-14)
+
+
+### Features
+
+* Add support for latest FortifyVulnerabilityExporter version 1.5.1 ([54fbcde](https://www.github.com/fortify/FortifyToolsInstaller/commit/54fbcde2c8c008c7537acfc3891c47f0f833be47))
+
 ## [2.2.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.1.0...v2.2.0) (2021-12-06)
 
 
