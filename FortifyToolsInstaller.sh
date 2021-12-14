@@ -59,7 +59,7 @@ defineTools() {
 	setToolDefaultVersion ScanCentralClient latest
 	addToolDownloadUrl    ScanCentralClient default 'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_${toolVersion}_x64.zip'
 	addToolDownloadUrl    ScanCentralClient latest  'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_Latest_x64.zip'
-	addToolSHA256         ScanCentralClient latest  '055e26cb8ee81f148536a9e94b64a07d388a243291b48293df17d7ee2b4f2d58'
+	addToolSHA256         ScanCentralClient latest  '435ce18192d276a46c6f4ddfc29239b24c137b55aad485112a8e0150cddbdc51'
 	addToolSHA256         ScanCentralClient 21.2.0  '055e26cb8ee81f148536a9e94b64a07d388a243291b48293df17d7ee2b4f2d58'
 	addToolSHA256         ScanCentralClient 21.1.2  '313d37acc652edba9657fbc8fed1d811ad0df014636f02314a97865c48244dd6'
 	addToolSHA256         ScanCentralClient 20.2.0  'c559e1e08c0d90af71e77bdbb806731f818f59d4b3da7e41c02a307495c38d06'
