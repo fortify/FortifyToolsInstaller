@@ -72,8 +72,9 @@ defineTools() {
 	setToolDefaultVersion FortifyVulnerabilityExporter latest
 	addToolDownloadUrl    FortifyVulnerabilityExporter default 'https://github.com/fortify/FortifyVulnerabilityExporter/releases/download/${toolVersion}/FortifyVulnerabilityExporter.zip'
 	addToolDownloadUrl    FortifyVulnerabilityExporter latest  'https://github.com/fortify/FortifyVulnerabilityExporter/releases/latest/download/FortifyVulnerabilityExporter.zip'
-        addToolSHA256         FortifyVulnerabilityExporter latest  '86ce98782823354a3bfc0fe770ec8344df616b69316b73d2319e875a9d2bb8d2'
-        addToolSHA256         FortifyVulnerabilityExporter v1.5.3  '86ce98782823354a3bfc0fe770ec8344df616b69316b73d2319e875a9d2bb8d2'
+    addToolSHA256         FortifyVulnerabilityExporter latest  '98a1deb443859018de25c853bb90001088819be556495b309a7e34c798c8da33'
+	addToolSHA256         FortifyVulnerabilityExporter v1.5.4  '98a1deb443859018de25c853bb90001088819be556495b309a7e34c798c8da33'
+    addToolSHA256         FortifyVulnerabilityExporter v1.5.3  '86ce98782823354a3bfc0fe770ec8344df616b69316b73d2319e875a9d2bb8d2'
 	addToolSHA256         FortifyVulnerabilityExporter v1.5.2  '86eaa462085f8a0b178a4a697e13332ce1954a9e3d886a7d8c710ce5b53a3a07'
 	addToolSHA256         FortifyVulnerabilityExporter v1.5.1  '8db8d6db6c7d3e6ddeee0722179cb0f413a0d3dcefa19a21db5461a0b0c410d4'
 	addToolSHA256         FortifyVulnerabilityExporter v1.5.0  'cc86851b0b5adada0b04f43b93693a637ab3735e85d25246f859535aeb7835cf'
