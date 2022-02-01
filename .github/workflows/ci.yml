@@ -47,7 +47,10 @@ jobs:
         
       - name: Test tool installation
         run: |
-            FTI_TOOLS=FU:v5.2.1 source ./FortifyToolsInstaller.sh && [ -x "$(which FoDUpload)" ]
+            FTI_TOOLS=FU:v5.2.1,FU:latest,SC:21.2.0,SC:latest,FVE:v1.5.3,FVE:latest source ./FortifyToolsInstaller.sh \
+              && [ -x "$(which FoDUpload)" ] && echo "FoDUpload found on path" \
+              && [ -x "$(which scancentral)" ] && echo "scancentral found on path" \
+              && [ -x "$(which FortifyVulnerabilityExporter)" ] && echo "FortifyVulnerabilityExporter found on path"
           
       - name: Prepare release PR
         uses: GoogleCloudPlatform/release-please-action@v2
