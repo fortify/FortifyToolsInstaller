@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.10.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.9.0...v2.10.0) (2022-06-14)
+
+
+### Features
+
+* Add support for FoDUploader 5.3.1 ([ce2e059](https://www.github.com/fortify/FortifyToolsInstaller/commit/ce2e059b07234d4e640fc9b798ba0b5bbb939336))
+* Add support for ScanCentral Client 20.2.4 ([ce2e059](https://www.github.com/fortify/FortifyToolsInstaller/commit/ce2e059b07234d4e640fc9b798ba0b5bbb939336))
+* Add support for ScanCentral Client 22.1.0 ([ce2e059](https://www.github.com/fortify/FortifyToolsInstaller/commit/ce2e059b07234d4e640fc9b798ba0b5bbb939336))
+
+
+### Bug Fixes
+
+* Update hash for latest FoDUploader ([ce2e059](https://www.github.com/fortify/FortifyToolsInstaller/commit/ce2e059b07234d4e640fc9b798ba0b5bbb939336))
+* Update hash for latest ScanCentral Client ([ce2e059](https://www.github.com/fortify/FortifyToolsInstaller/commit/ce2e059b07234d4e640fc9b798ba0b5bbb939336))
+
 ## [2.9.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.8.0...v2.9.0) (2022-04-11)
 
 
