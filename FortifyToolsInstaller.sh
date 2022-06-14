@@ -43,7 +43,8 @@ defineTools() {
 	setToolDefaultVersion FoDUploader latest
 	addToolDownloadUrl    FoDUploader default 'https://github.com/fod-dev/fod-uploader-java/releases/download/${toolVersion}/FodUpload.jar'
 	addToolDownloadUrl    FoDUploader latest  'https://github.com/fod-dev/fod-uploader-java/releases/latest/download/FodUpload.jar'
-	addToolSHA256         FoDUploader latest  '302e394dd0a84321a388ae0a802c5847dcfe52284e2fe9d7d524952aea8214f0'
+	addToolSHA256         FoDUploader latest  '9ac7d8c093511796b9d69c24e7ef17b763614c24b27787eff27ed7960d9105f4'
+	addToolSHA256         FoDUploader v5.3.1  '9ac7d8c093511796b9d69c24e7ef17b763614c24b27787eff27ed7960d9105f4'
 	addToolSHA256         FoDUploader v5.3.0  '302e394dd0a84321a388ae0a802c5847dcfe52284e2fe9d7d524952aea8214f0'
 	addToolSHA256         FoDUploader v5.2.1  'f52e070309cc5539ed1937cd16c370ccf5c09d5cf4e80708766ab43959d4fa20'
 	addToolSHA256         FoDUploader v5.2.0  '1e08c0fc1269e39fe502fe3ab301182e2ef2a8884328ac2beec092873d308100'
@@ -59,13 +60,15 @@ defineTools() {
 	setToolDefaultVersion ScanCentralClient latest
 	addToolDownloadUrl    ScanCentralClient default 'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_${toolVersion}_x64.zip'
 	addToolDownloadUrl    ScanCentralClient latest  'https://tools.fortify.com/scancentral/Fortify_ScanCentral_Client_Latest_x64.zip'
-	addToolSHA256         ScanCentralClient latest  '96b6678e0a133f2589ac1df7b7ff34141630c2c697ea17be3a610bccb3b0d97e'
+	addToolSHA256         ScanCentralClient latest  'dc57f68e1b89578ee7b9230c6ff5ea268480e8ca6d847f3ddbdb0bb95065e107'
+	addToolSHA256         ScanCentralClient 22.1.0  'dc57f68e1b89578ee7b9230c6ff5ea268480e8ca6d847f3ddbdb0bb95065e107'
 	addToolSHA256         ScanCentralClient 21.2.3  '96b6678e0a133f2589ac1df7b7ff34141630c2c697ea17be3a610bccb3b0d97e'
 	addToolSHA256         ScanCentralClient 21.2.2  'e38dcd114153ff9e3f570f2dae2a9e5ebf30b10c9900ae8b96a03e22bc35a487'
 	addToolSHA256         ScanCentralClient 21.2.0  '055e26cb8ee81f148536a9e94b64a07d388a243291b48293df17d7ee2b4f2d58'
 	addToolSHA256         ScanCentralClient 21.1.4  'c12b4725fa1bcaf718d05a7dcd5fb44b90139b21fa4009fa3b1c170b886df80d'
 	addToolSHA256         ScanCentralClient 21.1.3  '176e6ec213cb958b6828ca8601dc482d5a4ba5126f79e3249bf4e58d6982aea0'
 	addToolSHA256         ScanCentralClient 21.1.2  '313d37acc652edba9657fbc8fed1d811ad0df014636f02314a97865c48244dd6'
+	addToolSHA256         ScanCentralClient 20.2.4  'a0a6acba48b7b3f989db191053d336410b124cb493f006abcba09cc70311b095'
 	addToolSHA256         ScanCentralClient 20.2.0  'c559e1e08c0d90af71e77bdbb806731f818f59d4b3da7e41c02a307495c38d06'
 	addToolSHA256         ScanCentralClient 20.1.0  '4a315c9ab9c61978b47772945e29063545478ae2f0e4574c0111bce891c04eb5'
 	
