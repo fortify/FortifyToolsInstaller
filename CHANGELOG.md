@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.11.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.10.0...v2.11.0) (2022-08-12)
+
+
+### Features
+
+* Add support for FoDUploader v5.4.0 ([a42daba](https://www.github.com/fortify/FortifyToolsInstaller/commit/a42daba929ddfc0752c2645e431d168ac6223db4))
+* Add support for FortifyVulnerabilityExporter v1.6.0 ([a42daba](https://www.github.com/fortify/FortifyToolsInstaller/commit/a42daba929ddfc0752c2645e431d168ac6223db4))
+
 ## [2.10.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.9.0...v2.10.0) (2022-06-14)
 
 
