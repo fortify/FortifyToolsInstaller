@@ -43,7 +43,8 @@ defineTools() {
 	setToolDefaultVersion FoDUploader latest
 	addToolDownloadUrl    FoDUploader default 'https://github.com/fod-dev/fod-uploader-java/releases/download/${toolVersion}/FodUpload.jar'
 	addToolDownloadUrl    FoDUploader latest  'https://github.com/fod-dev/fod-uploader-java/releases/latest/download/FodUpload.jar'
-	addToolSHA256         FoDUploader latest  '9ac7d8c093511796b9d69c24e7ef17b763614c24b27787eff27ed7960d9105f4'
+	addToolSHA256         FoDUploader latest  '7d3fc9ada2df3cd5ed6159685d36656d04cef6ddda69bff2110702c052e64fce'
+        addToolSHA256         FoDUploader v5.4.0  '7d3fc9ada2df3cd5ed6159685d36656d04cef6ddda69bff2110702c052e64fce'
 	addToolSHA256         FoDUploader v5.3.1  '9ac7d8c093511796b9d69c24e7ef17b763614c24b27787eff27ed7960d9105f4'
 	addToolSHA256         FoDUploader v5.3.0  '302e394dd0a84321a388ae0a802c5847dcfe52284e2fe9d7d524952aea8214f0'
 	addToolSHA256         FoDUploader v5.2.1  'f52e070309cc5539ed1937cd16c370ccf5c09d5cf4e80708766ab43959d4fa20'
@@ -77,7 +78,8 @@ defineTools() {
 	setToolDefaultVersion FortifyVulnerabilityExporter latest
 	addToolDownloadUrl    FortifyVulnerabilityExporter default 'https://github.com/fortify/FortifyVulnerabilityExporter/releases/download/${toolVersion}/FortifyVulnerabilityExporter.zip'
 	addToolDownloadUrl    FortifyVulnerabilityExporter latest  'https://github.com/fortify/FortifyVulnerabilityExporter/releases/latest/download/FortifyVulnerabilityExporter.zip'
-	addToolSHA256         FortifyVulnerabilityExporter latest  '6a6fe679768a8f079f00befe1daf6a606b091bf199829d66fe4f8b28de40e67c'
+	addToolSHA256         FortifyVulnerabilityExporter latest  '48dffe599c8712393c7491f5c824de1a17afea0d0a5b4c8f0c657674ff2c6bb9'
+        addToolSHA256         FortifyVulnerabilityExporter v1.6.0  '48dffe599c8712393c7491f5c824de1a17afea0d0a5b4c8f0c657674ff2c6bb9'
 	addToolSHA256         FortifyVulnerabilityExporter v1.5.5  '6a6fe679768a8f079f00befe1daf6a606b091bf199829d66fe4f8b28de40e67c'
 	addToolSHA256         FortifyVulnerabilityExporter v1.5.4  '98a1deb443859018de25c853bb90001088819be556495b309a7e34c798c8da33'
  	addToolSHA256         FortifyVulnerabilityExporter v1.5.3  '86ce98782823354a3bfc0fe770ec8344df616b69316b73d2319e875a9d2bb8d2'
