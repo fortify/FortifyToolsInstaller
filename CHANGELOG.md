@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.14.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.13.0...v2.14.0) (2022-10-28)
+
+
+### Features
+
+* Add support for ScanCentral Client 22.1.2 ([c6cb6cd](https://www.github.com/fortify/FortifyToolsInstaller/commit/c6cb6cd76bef28c84a11f933f52a4838d64d27de))
+
 ## [2.13.0](https://www.github.com/fortify/FortifyToolsInstaller/compare/v2.12.0...v2.13.0) (2022-10-21)
 
 
